@@ -1,11 +1,6 @@
 package com.example.demo.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -16,11 +11,13 @@ public class ClientConnectionEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "parent_id")
-    private Long parentId;
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private ClientEntity parentClient;
 
-    @Column(name = "child_id")
-    private Long childId;
+    @OneToOne
+    @JoinColumn(name = "child_id")
+    private ClientEntity childClient;
 
     @Column(name = "date_create")
     private LocalDateTime creationDate;
@@ -33,20 +30,20 @@ public class ClientConnectionEntity {
         this.id = id;
     }
 
-    public Long getParentId() {
-        return parentId;
+    public ClientEntity getParentClient() {
+        return parentClient;
     }
 
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
+    public void setParentClient(ClientEntity parentClient) {
+        this.parentClient = parentClient;
     }
 
-    public Long getChildId() {
-        return childId;
+    public ClientEntity getChildClient() {
+        return childClient;
     }
 
-    public void setChildId(Long childId) {
-        this.childId = childId;
+    public void setChildClient(ClientEntity childClient) {
+        this.childClient = childClient;
     }
 
     public LocalDateTime getCreationDate() {
@@ -56,4 +53,6 @@ public class ClientConnectionEntity {
     public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
+
+    
 }

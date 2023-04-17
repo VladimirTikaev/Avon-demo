@@ -1,11 +1,8 @@
 package com.example.demo.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "client_type")
@@ -17,6 +14,13 @@ public class ClientTypeEntity {
 
     @Column(name = "name")
     private String name;
+
+    @OneToMany(
+            mappedBy = "type",
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.ALL}
+    )
+    private List<ClientEntity> clientList= new ArrayList();
 
     public Long getId() {
         return id;
@@ -32,5 +36,13 @@ public class ClientTypeEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<ClientEntity> getClientList() {
+        return clientList;
+    }
+
+    public void setClientList(List<ClientEntity> clientList) {
+        this.clientList = clientList;
     }
 }

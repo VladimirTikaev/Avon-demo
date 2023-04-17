@@ -12,11 +12,13 @@ public class ClientEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "type_id")
-    private Long typeId;
+    @ManyToOne
+    @JoinColumn(name = "type_id")
+    private ClientTypeEntity type;
 
-    @Column(name = "level_id")
-    private Long levelId;
+    @ManyToOne
+    @JoinColumn(name = "level_id")
+    private RemunerationLevelEntity level;
 
     @Column(name = "fio")
     private String fio;
@@ -31,6 +33,16 @@ public class ClientEntity {
     )
     private List<ClientOrderEntity> orderList = new ArrayList();
 
+    @OneToMany(
+            mappedBy = "parentClient",
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.ALL}
+    )
+    private List<ClientConnectionEntity> clientConnectionChildList = new ArrayList();
+
+    @OneToOne(mappedBy = "childClient")
+    private ClientEntity parentClient;
+
     public Long getId() {
         return id;
     }
@@ -39,20 +51,20 @@ public class ClientEntity {
         this.id = id;
     }
 
-    public Long getTypeId() {
-        return typeId;
+    public ClientTypeEntity getType() {
+        return type;
     }
 
-    public void setTypeId(Long typeId) {
-        this.typeId = typeId;
+    public void setType(ClientTypeEntity type) {
+        this.type = type;
     }
 
-    public Long getLevelId() {
-        return levelId;
+    public RemunerationLevelEntity getLevel() {
+        return level;
     }
 
-    public void setLevelId(Long levelId) {
-        this.levelId = levelId;
+    public void setLevel(RemunerationLevelEntity level) {
+        this.level = level;
     }
 
     public String getFio() {
@@ -77,5 +89,21 @@ public class ClientEntity {
 
     public void setOrderList(List<ClientOrderEntity> orderList) {
         this.orderList = orderList;
+    }
+
+    public List<ClientConnectionEntity> getClientConnectionChildList() {
+        return clientConnectionChildList;
+    }
+
+    public void setClientConnectionChildList(List<ClientConnectionEntity> clientConnectionChildList) {
+        this.clientConnectionChildList = clientConnectionChildList;
+    }
+
+    public ClientEntity getParentClient() {
+        return parentClient;
+    }
+
+    public void setParentClient(ClientEntity parentClient) {
+        this.parentClient = parentClient;
     }
 }
