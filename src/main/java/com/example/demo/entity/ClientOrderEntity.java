@@ -1,12 +1,9 @@
 package com.example.demo.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "client_order")
@@ -16,14 +13,23 @@ public class ClientOrderEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "client_id")
-    private Long clientId;
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private ClientEntity client;
 
-    @Column(name = "status_id")
-    private Long statusId;
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    private OrderStatusEntity status;
 
     @Column(name = "date_order")
     private LocalDate date;
+
+    @OneToMany(
+            mappedBy = "order",
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.ALL}
+    )
+    private List<ProductEntity> productList = new ArrayList();
 
     public Long getId() {
         return id;
@@ -33,20 +39,20 @@ public class ClientOrderEntity {
         this.id = id;
     }
 
-    public Long getClientId() {
-        return clientId;
+    public ClientEntity getClient() {
+        return client;
     }
 
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
+    public void setClient(ClientEntity client) {
+        this.client = client;
     }
 
-    public Long getStatusId() {
-        return statusId;
+    public OrderStatusEntity getStatus() {
+        return status;
     }
 
-    public void setStatusId(Long statusId) {
-        this.statusId = statusId;
+    public void setStatus(OrderStatusEntity status) {
+        this.status = status;
     }
 
     public LocalDate getDate() {
@@ -55,5 +61,13 @@ public class ClientOrderEntity {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public List<ProductEntity> getProductList() {
+        return productList;
+    }
+
+    public void setProductList(List<ProductEntity> productList) {
+        this.productList = productList;
     }
 }

@@ -1,11 +1,8 @@
 package com.example.demo.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "client")
@@ -26,6 +23,13 @@ public class ClientEntity {
 
     @Column(name = "discount")
     private Float discount;
+
+    @OneToMany(
+            mappedBy = "client",
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.ALL}
+    )
+    private List<ClientOrderEntity> orderList = new ArrayList();
 
     public Long getId() {
         return id;
@@ -65,5 +69,13 @@ public class ClientEntity {
 
     public void setDiscount(Float discount) {
         this.discount = discount;
+    }
+
+    public List<ClientOrderEntity> getOrderList() {
+        return orderList;
+    }
+
+    public void setOrderList(List<ClientOrderEntity> orderList) {
+        this.orderList = orderList;
     }
 }

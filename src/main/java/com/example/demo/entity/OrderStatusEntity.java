@@ -1,11 +1,9 @@
 package com.example.demo.entity;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "order_status")
@@ -15,6 +13,13 @@ public class OrderStatusEntity {
     private Long id;
 
     private String name;
+
+    @OneToMany(
+            mappedBy = "status",
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.ALL}
+    )
+    private List<ClientOrderEntity> orderList = new ArrayList();
 
     public Long getId() {
         return id;
@@ -30,5 +35,13 @@ public class OrderStatusEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<ClientOrderEntity> getOrderList() {
+        return orderList;
+    }
+
+    public void setOrderList(List<ClientOrderEntity> orderList) {
+        this.orderList = orderList;
     }
 }

@@ -1,11 +1,6 @@
 package com.example.demo.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "product")
@@ -15,8 +10,9 @@ public class ProductEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "order_id")
-    private Long orderId;
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private ClientOrderEntity order;
 
     @Column(name = "product_code")
     private String code;
@@ -35,12 +31,12 @@ public class ProductEntity {
         this.id = id;
     }
 
-    public Long getOrderId() {
-        return orderId;
+    public ClientOrderEntity getOrder() {
+        return order;
     }
 
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
+    public void setOrder(ClientOrderEntity order) {
+        this.order = order;
     }
 
     public String getCode() {
