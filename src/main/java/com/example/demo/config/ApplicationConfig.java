@@ -52,7 +52,7 @@ public class ApplicationConfig {
         Map<String, Object> jpaProperties = new HashMap();
         jpaProperties.put("hibernate.hbm2ddl.auto", this.env.getProperty("spring.jpa.hibernate.ddl-auto"));
         jpaProperties.put("hibernate.show-sql", this.env.getProperty("spring.jpa.show-sql"));
-        return builder.dataSource(dataSource).packages(new String[]{"ru.sbrf.aps.database.application.entity"}).persistenceUnit("application").properties(jpaProperties).build();
+        return builder.dataSource(dataSource).packages(new String[]{"com.example.demo.entity"}).persistenceUnit("application").properties(jpaProperties).build();
     }
 
     @Bean(

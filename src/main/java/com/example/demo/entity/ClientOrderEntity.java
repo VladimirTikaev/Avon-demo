@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class ClientOrderEntity {
     private OrderStatusEntity status;
 
     @Column(name = "date_order")
-    private LocalDate date;
+    private OffsetDateTime date;
 
     @OneToMany(
             mappedBy = "order",
@@ -55,11 +56,7 @@ public class ClientOrderEntity {
         this.status = status;
     }
 
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
+    public void setDate(OffsetDateTime date) {
         this.date = date;
     }
 

@@ -41,7 +41,7 @@ public class ClientEntity {
     private List<ClientConnectionEntity> clientConnectionChildList = new ArrayList();
 
     @OneToOne(mappedBy = "childClient")
-    private ClientEntity parentClient;
+    private ClientConnectionEntity parenClientCon;
 
     public Long getId() {
         return id;
@@ -99,11 +99,11 @@ public class ClientEntity {
         this.clientConnectionChildList = clientConnectionChildList;
     }
 
-    public ClientEntity getParentClient() {
-        return parentClient;
+    public ClientConnectionEntity getParenClientCon() {
+        return parenClientCon;
     }
 
-    public void setParentClient(ClientEntity parentClient) {
-        this.parentClient = parentClient;
+    public void setParenClientCon(ClientConnectionEntity parenClientCon) {
+        this.parenClientCon = parenClientCon;
     }
 }

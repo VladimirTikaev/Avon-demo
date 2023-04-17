@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "client_connection")
@@ -20,7 +21,7 @@ public class ClientConnectionEntity {
     private ClientEntity childClient;
 
     @Column(name = "date_create")
-    private LocalDateTime creationDate;
+    private OffsetDateTime creationDate;
 
     public Long getId() {
         return id;
@@ -46,13 +47,11 @@ public class ClientConnectionEntity {
         this.childClient = childClient;
     }
 
-    public LocalDateTime getCreationDate() {
+    public OffsetDateTime getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(LocalDateTime creationDate) {
+    public void setCreationDate(OffsetDateTime creationDate) {
         this.creationDate = creationDate;
     }
-
-    
 }
