@@ -42,6 +42,14 @@ create table product
      price             bigint
 );
 
+create table client_connection
+(
+     id                bigserial primary key,
+     parent_id bigint  not null references client,
+     child_id bigint   not null references client,
+     date_create        timestamp with time zone
+);
+
 
 
 
