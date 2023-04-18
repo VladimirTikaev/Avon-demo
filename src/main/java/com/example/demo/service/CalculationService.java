@@ -141,7 +141,7 @@ public class CalculationService {
             clientSalesEntity.setClient(client);
             clientSalesEntity.setClientFio(client.getFio());
             clientSalesEntity.setClientType(client.getType().getName());
-            clientSalesEntity.setRewardLevel(client.getLevel().getName());
+            clientSalesEntity.setRewardLevel(client.getLevel().getName().name());
             clientSalesEntity.setPersonalSalesSum(fullSum);
 
             Double pureSum = fullSum == 0.0

@@ -1,5 +1,7 @@
 package com.example.demo.entity;
 
+import com.example.demo.constant.RemunerationLevel;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +14,12 @@ public class RemunerationLevelEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "name")
-    private String name;
+    private RemunerationLevel name;
+
+    @Column(name = "extra_bonus")
+    private Double extraBonus;
 
     @OneToMany(
             mappedBy = "level",
@@ -30,12 +36,20 @@ public class RemunerationLevelEntity {
         this.id = id;
     }
 
-    public String getName() {
+    public RemunerationLevel getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(RemunerationLevel name) {
         this.name = name;
+    }
+
+    public Double getExtraBonus() {
+        return extraBonus;
+    }
+
+    public void setExtraBonus(Double extraBonus) {
+        this.extraBonus = extraBonus;
     }
 
     public List<ClientEntity> getClientList() {

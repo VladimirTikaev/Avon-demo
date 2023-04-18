@@ -15,8 +15,9 @@ create table client_type
 drop table if exists remuneration_level;
 create table remuneration_level
 (
-    id   bigserial primary key,
-    name varchar(30) not null unique
+    id          bigserial primary key,
+    name        varchar(30) not null unique,
+    extra_bonus real        not null
 );
 
 drop table if exists client;
