@@ -1,11 +1,6 @@
 package com.example.demo.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "generation_squad")
@@ -28,6 +23,10 @@ public class GenerationSquadEntity {
 
     @Column(name = "pure_sales_sum")
     private Double pureSalesSum;
+
+    @ManyToOne
+    @JoinColumn(name = "generation_id")
+    private GenerationEntity generationEntity;
 
     public Long getId() {
         return id;
@@ -75,6 +74,14 @@ public class GenerationSquadEntity {
 
     public void setPureSalesSum(Double pureSalesSum) {
         this.pureSalesSum = pureSalesSum;
+    }
+
+    public GenerationEntity getGenerationEntity() {
+        return generationEntity;
+    }
+
+    public void setGenerationEntity(GenerationEntity generationEntity) {
+        this.generationEntity = generationEntity;
     }
 }
 
