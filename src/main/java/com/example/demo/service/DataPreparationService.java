@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import com.example.demo.entity.*;
 import com.example.demo.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +14,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class CalculationService {
-
-    private final ClientConnectionRepository clientConnectionRepository;
+public class DataPreparationService {
     private final ClientRepository clientRepository;
     private final ClientSalesRepository clientSalesRepository;
     private final GenerationRepository generationRepository;
@@ -25,8 +22,7 @@ public class CalculationService {
 
     private final Environment environment;
 
-    public CalculationService(ClientConnectionRepository clientConnectionRepository, ClientRepository clientRepository, ClientSalesRepository clientSalesRepository, GenerationRepository generationRepository, GenerationSquadRepository generationSquadRepository, Environment environment) {
-        this.clientConnectionRepository = clientConnectionRepository;
+    public DataPreparationService(ClientRepository clientRepository, ClientSalesRepository clientSalesRepository, GenerationRepository generationRepository, GenerationSquadRepository generationSquadRepository, Environment environment) {
         this.clientRepository = clientRepository;
         this.clientSalesRepository = clientSalesRepository;
         this.generationRepository = generationRepository;
@@ -34,7 +30,8 @@ public class CalculationService {
         this.environment = environment;
     }
 
-    public String calculate() {
+
+    public String prepareClientsAndGenerationsData() {
         OffsetDateTime dateEnd = calculateFirstDateOfMonth();
         OffsetDateTime dateStart = dateEnd.minusMonths(1);
 

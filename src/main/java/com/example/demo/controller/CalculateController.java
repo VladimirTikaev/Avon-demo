@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.service.CalculationService;
+import com.example.demo.service.DataPreparationService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,15 +9,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/calculation")
 public class CalculateController {
 
-    private final CalculationService calculationService;
+    private final DataPreparationService generationCalculationService;
 
-    public CalculateController(CalculationService calculationService) {
-        this.calculationService = calculationService;
+    public CalculateController(DataPreparationService generationCalculationService) {
+        this.generationCalculationService = generationCalculationService;
     }
 
     @GetMapping
     public String test(){
-        calculationService.calculate();
+//        generationCalculationService.calculate();
 
         return "test String";
     }
