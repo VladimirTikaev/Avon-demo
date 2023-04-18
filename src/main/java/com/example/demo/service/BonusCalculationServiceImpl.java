@@ -116,11 +116,8 @@ public class BonusCalculationServiceImpl implements BonusCalculationService {
 
     private boolean isMeetConditionForDirector(ClientEntity client) {
         RemunerationLevel clientLevel = client.getLevel().getName();
-        if (clientLevel == K1 || clientLevel == K2) {
-            return false;
-        }
-        // TODO: 4/18/2023 добавить рассчет бонуса 
-        return true;
+        return clientLevel != K1 && clientLevel != K2;
+        // TODO: 4/18/2023 добавить рассчет бонуса
     }
 
     private GenerationEntity getFirstGeneration(ClientSalesEntity clientSales) {
