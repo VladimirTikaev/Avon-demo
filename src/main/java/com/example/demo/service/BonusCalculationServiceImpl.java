@@ -8,6 +8,7 @@ import com.example.demo.entity.GenerationSquadEntity;
 import com.example.demo.repository.ClientConnectionRepository;
 import com.example.demo.repository.ClientRepository;
 import com.example.demo.repository.ClientSalesRepository;
+import com.example.demo.repository.RemunerationLevelRepository;
 import com.example.demo.service.api.BonusCalculationService;
 import com.example.demo.util.CalculationHelper;
 import org.springframework.stereotype.Service;
@@ -31,9 +32,12 @@ public class BonusCalculationServiceImpl implements BonusCalculationService {
     private final ClientRepository clientRepository;
     private final ClientSalesRepository clientSalesRepository;
 
-    public BonusCalculationServiceImpl(ClientRepository clientRepository, ClientSalesRepository clientSalesRepository, ClientConnectionRepository clientConnectionRepository) {
+    private final RemunerationLevelRepository remunerationLevelRepository;
+
+    public BonusCalculationServiceImpl(ClientRepository clientRepository, ClientSalesRepository clientSalesRepository, ClientConnectionRepository clientConnectionRepository, RemunerationLevelRepository remunerationLevelRepository) {
         this.clientRepository = clientRepository;
         this.clientSalesRepository = clientSalesRepository;
+        this.remunerationLevelRepository = remunerationLevelRepository;
     }
 
     @Override
@@ -54,6 +58,13 @@ public class BonusCalculationServiceImpl implements BonusCalculationService {
             }
         }
         return 0.0;
+    }
+
+    @Override
+    public Double calculateGenerationBonus(Long clientId) {
+        ClientEntity client = clientRepository.findById(clientId).orElseThrow();
+        RemunerationLevel remunerationLevel = client.getLevel().getName();
+        return remunerationLevelRepository.findByName(remunerationLevel).getExtraBonus();
     }
 
     private boolean isMeetConditionForCoordinator(ClientEntity client) {
