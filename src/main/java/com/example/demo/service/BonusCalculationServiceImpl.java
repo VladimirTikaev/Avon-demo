@@ -1,12 +1,10 @@
 package com.example.demo.service;
 
 import com.example.demo.constant.RemunerationLevel;
-import com.example.demo.entity.ClientConnectionEntity;
 import com.example.demo.entity.ClientEntity;
 import com.example.demo.entity.ClientSalesEntity;
 import com.example.demo.entity.GenerationEntity;
 import com.example.demo.entity.GenerationSquadEntity;
-import com.example.demo.entity.RemunerationLevelEntity;
 import com.example.demo.repository.ClientConnectionRepository;
 import com.example.demo.repository.ClientRepository;
 import com.example.demo.repository.ClientSalesRepository;
@@ -19,7 +17,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.example.demo.constant.RemunerationLevel.K1;
 import static com.example.demo.constant.RemunerationLevel.K2;
@@ -28,15 +25,15 @@ import static com.example.demo.constant.RemunerationLevel.K2;
 public class BonusCalculationServiceImpl implements BonusCalculationService {
 
     public static final int FIRST_GENERATION = 1;
+    public static final String REPRESENTATIVE = "Представитель";
+    public static final String BUSINESS_PARTNER = "Бизнес-партнер";
 
     private final ClientRepository clientRepository;
     private final ClientSalesRepository clientSalesRepository;
-    private final ClientConnectionRepository clientConnectionRepository;
 
     public BonusCalculationServiceImpl(ClientRepository clientRepository, ClientSalesRepository clientSalesRepository, ClientConnectionRepository clientConnectionRepository) {
         this.clientRepository = clientRepository;
         this.clientSalesRepository = clientSalesRepository;
-        this.clientConnectionRepository = clientConnectionRepository;
     }
 
     @Override
@@ -84,9 +81,9 @@ public class BonusCalculationServiceImpl implements BonusCalculationService {
         List<GenerationSquadEntity> previousFirstGenerationSquad = previousFirstGeneration.getGenerationSquadList();
         List<GenerationSquadEntity> beforePreviousFirstGenerationSquad = beforePreviousFirstGeneration.getGenerationSquadList();
 
-        int actualRepresentativeCount = countRepresentatives(actualFirstGenerationSquad);
-        int previousRepresentativeCount = countRepresentatives(previousFirstGenerationSquad);
-        int beforePreviousRepresentativeCount = countRepresentatives(beforePreviousFirstGenerationSquad);
+        long actualRepresentativeCount = countRepresentatives(actualFirstGenerationSquad);
+        long previousRepresentativeCount = countRepresentatives(previousFirstGenerationSquad);
+        long beforePreviousRepresentativeCount = countRepresentatives(beforePreviousFirstGenerationSquad);
 
         return actualRepresentativeCount > previousRepresentativeCount && previousRepresentativeCount > beforePreviousRepresentativeCount;
     }
@@ -134,30 +131,16 @@ public class BonusCalculationServiceImpl implements BonusCalculationService {
                 .orElseThrow(() -> new IllegalStateException("No element matches the predicate"));
     }
 
-    private int countRepresentatives(List<GenerationSquadEntity> generationSquad) {
+    private long countRepresentatives(List<GenerationSquadEntity> generationSquad) {
         return generationSquad.stream()
-                .mapToInt(e -> {
-                    ClientEntity clientEntity = clientRepository.findById(e.getClientId()).orElseThrow();
-                    boolean hasChildrenClient = clientConnectionRepository.getByParentClient(clientEntity).stream()
-                            .allMatch(element -> element.getChildClient() == null);
-                    return hasChildrenClient ? 0 : 1;
-                })
-                .sum();
+                .filter(e -> Objects.equals(e.getClientType(), REPRESENTATIVE))
+                .count();
     }
 
     private long countBusinessPartners(List<GenerationSquadEntity> generationSquad) {
         return generationSquad.stream()
-                .filter(e -> {
-                    ClientEntity clientEntity = clientRepository.findById(e.getClientId()).orElseThrow();
-                    List<ClientConnectionEntity> businessPartners = clientConnectionRepository.getByParentClient(clientEntity).stream()
-                            .filter(e1 -> e1.getChildClient() != null)
-                            .collect(Collectors.toList());
-                    return businessPartners.stream().anyMatch(e2 -> Objects.equals(e.getClientId(), e2.getParentClient().getId()));
-                })
-                .filter(e -> {
-                    RemunerationLevelEntity remunerationLevel = clientRepository.findById(e.getId()).orElseThrow().getLevel();
-                    return remunerationLevel != null;
-                })
+                .filter(e -> Objects.equals(e.getClientType(), BUSINESS_PARTNER))
+                .filter(e -> e.getClientEntity().getLevel() != null)
                 .count();
     }
 }
