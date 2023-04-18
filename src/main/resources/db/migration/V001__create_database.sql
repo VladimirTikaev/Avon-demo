@@ -43,7 +43,7 @@ create table product
 (
     id            bigserial primary key,
     order_id      bigint      not null references client_order,
-    product_code  varchar(30) not null unique,
+    product_code  varchar(30) not null,
     product_count int,
     price         bigint
 );
