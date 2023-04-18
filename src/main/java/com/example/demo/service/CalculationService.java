@@ -115,7 +115,7 @@ public class CalculationService {
             generationSquadEntity.setGenerationEntity(generation);
             generationSquadEntity.setClientEntity(childClient);
             generationSquadEntity.setClientType(childClient.getType().getName());
-            generationSquadEntity.setRewardLevel(childClient.getLevel().getName());
+            generationSquadEntity.setRewardLevel(childClient.getLevel().getName().name());
 
             ClientSalesEntity clientSalesEntity = clientSalesByClientId.get(childClient.getId());
             generationSquadEntity.setPersonalSalesSum(clientSalesEntity.getPersonalSalesSum());
