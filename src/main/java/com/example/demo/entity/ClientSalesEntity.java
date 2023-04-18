@@ -1,6 +1,8 @@
 package com.example.demo.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -18,7 +20,7 @@ public class ClientSalesEntity {
 
     @ManyToOne
     @JoinColumn(name = "client_id")
-    private ClientEntity clientEntity;
+    private ClientEntity client;
 
     @Column(name = "client_fio")
     private String clientFio;
@@ -34,6 +36,13 @@ public class ClientSalesEntity {
 
     @Column(name = "pure_sales_sum")
     private Double pureSalesSum;
+
+    @OneToMany(
+            mappedBy = "clientSales",
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.ALL}
+    )
+    private List<GenerationEntity> generationList = new ArrayList();
 
     public Long getId() {
         return id;
@@ -59,12 +68,12 @@ public class ClientSalesEntity {
         this.version = version;
     }
 
-    public ClientEntity getClientEntity() {
-        return clientEntity;
+    public ClientEntity getClient() {
+        return client;
     }
 
-    public void setClientEntity(ClientEntity clientEntity) {
-        this.clientEntity = clientEntity;
+    public void setClient(ClientEntity client) {
+        this.client = client;
     }
 
     public String getClientFio() {
@@ -105,6 +114,14 @@ public class ClientSalesEntity {
 
     public void setPureSalesSum(Double pureSalesSum) {
         this.pureSalesSum = pureSalesSum;
+    }
+
+    public List<GenerationEntity> getGenerationList() {
+        return generationList;
+    }
+
+    public void setGenerationList(List<GenerationEntity> generationList) {
+        this.generationList = generationList;
     }
 }
 

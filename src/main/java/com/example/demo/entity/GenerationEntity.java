@@ -1,11 +1,8 @@
 package com.example.demo.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "generation")
@@ -25,6 +22,17 @@ public class GenerationEntity {
 
     @Column(name = "pure_sales_sum")
     private Double pureSalesSum;
+
+    @ManyToOne
+    @JoinColumn(name = "client_sales_id")
+    private ClientSalesEntity clientSales;
+
+    @OneToMany(
+            mappedBy = "generationEntity",
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.ALL}
+    )
+    private List<GenerationSquadEntity> generationSquadList = new ArrayList();
 
     public Long getId() {
         return id;
@@ -64,5 +72,21 @@ public class GenerationEntity {
 
     public void setPureSalesSum(Double pureSalesSum) {
         this.pureSalesSum = pureSalesSum;
+    }
+
+    public ClientSalesEntity getClientSales() {
+        return clientSales;
+    }
+
+    public void setClientSales(ClientSalesEntity clientSales) {
+        this.clientSales = clientSales;
+    }
+
+    public List<GenerationSquadEntity> getGenerationSquadList() {
+        return generationSquadList;
+    }
+
+    public void setGenerationSquadList(List<GenerationSquadEntity> generationSquadList) {
+        this.generationSquadList = generationSquadList;
     }
 }

@@ -106,4 +106,15 @@ public class ClientEntity {
     public void setParenClientCon(ClientConnectionEntity parenClientCon) {
         this.parenClientCon = parenClientCon;
     }
+
+    @Override
+    public String toString() {
+        return "ClientEntity{" +
+                "id=" + id +
+                ", type=" + type.getName() +
+                ", level=" + level.getName() +
+                ", fio='" + fio + '\'' +
+                ", discount=" + discount +
+                '}';
+    }
 }

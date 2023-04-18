@@ -1,11 +1,6 @@
 package com.example.demo.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "generation_squad")
@@ -14,8 +9,9 @@ public class GenerationSquadEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "client_id")
-    private Long clientId;
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private ClientEntity clientEntity;
 
     @Column(name = "client_type")
     private String clientType;
@@ -29,6 +25,10 @@ public class GenerationSquadEntity {
     @Column(name = "pure_sales_sum")
     private Double pureSalesSum;
 
+    @ManyToOne
+    @JoinColumn(name = "generation_id")
+    private GenerationEntity generationEntity;
+
     public Long getId() {
         return id;
     }
@@ -37,12 +37,12 @@ public class GenerationSquadEntity {
         this.id = id;
     }
 
-    public Long getClientId() {
-        return clientId;
+    public ClientEntity getClientEntity() {
+        return clientEntity;
     }
 
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
+    public void setClientEntity(ClientEntity clientEntity) {
+        this.clientEntity = clientEntity;
     }
 
     public String getClientType() {
@@ -75,6 +75,14 @@ public class GenerationSquadEntity {
 
     public void setPureSalesSum(Double pureSalesSum) {
         this.pureSalesSum = pureSalesSum;
+    }
+
+    public GenerationEntity getGenerationEntity() {
+        return generationEntity;
+    }
+
+    public void setGenerationEntity(GenerationEntity generationEntity) {
+        this.generationEntity = generationEntity;
     }
 }
 
