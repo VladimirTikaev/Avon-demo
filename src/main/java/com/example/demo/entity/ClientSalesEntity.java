@@ -18,7 +18,7 @@ public class ClientSalesEntity {
 
     @ManyToOne
     @JoinColumn(name = "client_id")
-    private ClientEntity clientEntity;
+    private ClientEntity client;
 
     @Column(name = "client_fio")
     private String clientFio;
@@ -59,12 +59,12 @@ public class ClientSalesEntity {
         this.version = version;
     }
 
-    public ClientEntity getClientEntity() {
-        return clientEntity;
+    public ClientEntity getClient() {
+        return client;
     }
 
-    public void setClientEntity(ClientEntity clientEntity) {
-        this.clientEntity = clientEntity;
+    public void setClient(ClientEntity client) {
+        this.client = client;
     }
 
     public String getClientFio() {

@@ -1,13 +1,15 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.ClientConnectionEntity;
 import com.example.demo.entity.ClientEntity;
+import com.example.demo.entity.ClientSalesEntity;
 import com.example.demo.repository.ClientConnectionRepository;
 import com.example.demo.repository.ClientRepository;
+import com.example.demo.repository.ClientSalesRepository;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,32 +19,82 @@ public class CalculationService {
 
     private final ClientConnectionRepository clientConnectionRepository;
     private final ClientRepository clientRepository;
+    private final ClientSalesRepository clientSalesRepository;
 
-    public CalculationService(ClientConnectionRepository clientConnectionRepository, ClientRepository clientRepository) {
+    private final Environment environment;
+
+    public CalculationService(ClientConnectionRepository clientConnectionRepository, ClientRepository clientRepository, ClientSalesRepository clientSalesRepository, Environment environment) {
         this.clientConnectionRepository = clientConnectionRepository;
         this.clientRepository = clientRepository;
+        this.clientSalesRepository = clientSalesRepository;
+        this.environment = environment;
     }
 
     public String calculate() {
+        Map<Long, Double> sumByClientsId = clientRepository.getClientsAndSum()
+                .stream()
+                .collect(Collectors.toMap(ClientRepository.ClientSum::getClientId, ClientRepository.ClientSum::getClientSum));
 
-        List<ClientRepository.ClientSum> clientSums = clientRepository.getClientsAndSum();
-
-        clientRepository.getClientsAndSum().forEach(clientSum -> System.out.println("clientId = " + clientSum.getClientId() + " summ = " + clientSum.getClientSumma()));
-        List<ClientEntity> allClients = clientRepository.findAll();
-        Map<Long, ClientEntity> collect = allClients.stream().collect(Collectors.toMap(ClientEntity::getId, clientEntity -> clientEntity));
-
-        LocalDate now = LocalDate.now();
-        int monthValue = now.getMonthValue();
+        List<ClientSalesEntity> clientSalesEntityList = fillClientSales(clientRepository.findAll(), sumByClientsId);
 
 
-        String month = Integer.toString(now.getMonthValue());
-        String finalMonth = month.length() == 1 ? "0" + month : month;
-        System.out.println(now.getYear() + "" + finalMonth);
-
-
-        System.out.println();
+//
+//        clientRepository.getClientsAndSum().forEach(clientSum -> System.out.println("clientId = " + clientSum.getClientId() + " summ = " + clientSum.getClientSum()));
+//
+//
+//        List<ClientEntity> allClients = clientRepository.findAll();
+//        Map<Long, ClientEntity> clientsById = allClients.stream().collect(Collectors.toMap(ClientEntity::getId, clientEntity -> clientEntity));
+//
+//
+//        ClientEntity clientEntity = clientsById.get(1L);
+//        Double allSumm = clientEntity.getClientConnectionChildList().stream().map(clientConnection -> clientConnection.getChildClient())
+//                .map(childClient -> sumByClientsId.get(childClient.getId())).filter(sum -> sum != null).reduce((left, right) -> left + right).get();
+//        Double aDouble = sumByClientsId.get(1L);
+//
+//        System.out.println(allSumm + aDouble);
 
 
         return "success";
     }
+
+    private List<ClientSalesEntity> fillClientSales(List<ClientEntity> allClients, Map<Long, Double> sumByClientsId) {
+        String company = calculateCompany();
+        List<ClientSalesEntity> savedClientSalesList = new ArrayList<>();
+
+        allClients.stream().forEach(client -> {
+            ClientSalesEntity clientSalesEntity = new ClientSalesEntity();
+            Double fullSum = sumByClientsId.get(client.getId());
+            if (fullSum != null) {
+                clientSalesEntity.setCompanyName(company);
+
+                List<ClientSalesEntity> clientSalesByClientAndCompanyName = clientSalesRepository.findByClientAndCompanyName(client, company);
+
+                Integer version = clientSalesByClientAndCompanyName.stream().map(cs -> cs.getVersion()).max(Integer::compareTo).orElse(0);
+
+                clientSalesEntity.setVersion(version + 1);
+
+                clientSalesEntity.setClient(client);
+                clientSalesEntity.setClientFio(client.getFio());
+                clientSalesEntity.setClientType(client.getType().getName());
+                clientSalesEntity.setRewardLevel(client.getLevel().getName());
+                clientSalesEntity.setPersonalSalesSum(fullSum);
+
+                Double pureSum = fullSum - (fullSum / 100 * client.getDiscount()) - (fullSum / 100 * Integer.parseInt(environment.getProperty("NDS")));
+                clientSalesEntity.setPureSalesSum(pureSum);
+
+                savedClientSalesList.add(clientSalesRepository.save(clientSalesEntity));
+            }
+        });
+
+        return savedClientSalesList;
+    }
+
+
+    private String calculateCompany() {
+        LocalDate now = LocalDate.now();
+        String month = Integer.toString(now.getMonthValue());
+        String finalMonth = month.length() == 1 ? "0" + month : month;
+        return now.getYear() + "" + finalMonth;
+    }
+
 }
