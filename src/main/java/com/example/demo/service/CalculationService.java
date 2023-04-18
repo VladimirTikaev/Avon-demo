@@ -2,9 +2,12 @@ package com.example.demo.service;
 
 import com.example.demo.entity.ClientEntity;
 import com.example.demo.entity.ClientSalesEntity;
+import com.example.demo.entity.GenerationEntity;
+import com.example.demo.entity.GenerationSquadEntity;
 import com.example.demo.repository.ClientConnectionRepository;
 import com.example.demo.repository.ClientRepository;
 import com.example.demo.repository.ClientSalesRepository;
+import com.example.demo.repository.GenerationRepository;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +24,15 @@ public class CalculationService {
     private final ClientConnectionRepository clientConnectionRepository;
     private final ClientRepository clientRepository;
     private final ClientSalesRepository clientSalesRepository;
+    private final GenerationRepository generationRepository;
 
     private final Environment environment;
 
-    public CalculationService(ClientConnectionRepository clientConnectionRepository, ClientRepository clientRepository, ClientSalesRepository clientSalesRepository, Environment environment) {
+    public CalculationService(ClientConnectionRepository clientConnectionRepository, ClientRepository clientRepository, ClientSalesRepository clientSalesRepository, GenerationRepository generationRepository, Environment environment) {
         this.clientConnectionRepository = clientConnectionRepository;
         this.clientRepository = clientRepository;
         this.clientSalesRepository = clientSalesRepository;
+        this.generationRepository = generationRepository;
         this.environment = environment;
     }
 
@@ -41,7 +46,11 @@ public class CalculationService {
 
         ClientEntity client = clientSalesByClientId.get(1L).getClient();
 
-        calc(client, clientSalesByClientId, 1);
+        clientSalesEntityList.forEach(clientSales -> {
+            calc(clientSales.getClient(), clientSalesByClientId, 1);
+        });
+
+//        calc(client, clientSalesByClientId, 1);
 
 //
 //        clientRepository.getClientsAndSum().forEach(clientSum -> System.out.println("clientId = " + clientSum.getClientId() + " summ = " + clientSum.getClientSum()));
@@ -54,18 +63,65 @@ public class CalculationService {
         return "success";
     }
 
-    private void calc(ClientEntity clientEntity, Map<Long, ClientSalesEntity> clientSalesByClientId, Integer generation) {
+    private void calc(ClientEntity client, Map<Long, ClientSalesEntity> clientSalesByClientId, Integer generationNumber) {
+        List<ClientEntity> clientChildList = client.getClientConnectionChildList().stream()
+                .map(clientConnection -> clientConnection.getChildClient())
+                .collect(Collectors.toList());
 
-        Double clientSum = clientSalesByClientId.get(clientEntity.getId()).getPersonalSalesSum();
-        Double allSumFirstGen = clientEntity.getClientConnectionChildList().stream().map(clientConnection -> clientConnection.getChildClient())
-                .map(child -> clientSalesByClientId.get(child.getId()))
-                .map(cl -> cl.getPersonalSalesSum())
-                .filter(sum -> sum != null).reduce((left, right) -> left + right).get();
-        Double finalSum = clientSum + allSumFirstGen;
+        if(clientChildList.size() != 0) {
+
+            Integer secondGeneration =+ generationNumber;
+            clientChildList.forEach(clientEntity -> {
+                calc(client, clientSalesByClientId, secondGeneration);
+            });
+
+            ClientSalesEntity clientSalesEntity = clientSalesByClientId.get(client.getId());
+            Double clientSum = clientSalesEntity.getPersonalSalesSum();
+            Double clientPureSalesSum = clientSalesEntity.getPureSalesSum();
 
 
-        System.out.println("second result" + finalSum);
+            Double allSumFirstGen = clientChildList.stream()
+                    .map(child -> clientSalesByClientId.get(child.getId()))
+                    .map(cl -> cl.getPersonalSalesSum())
+                    .reduce((left, right) -> left + right).get();
+            Double finalSalesSum = clientSum + allSumFirstGen;
 
+            System.out.println("second result" + finalSalesSum);
+
+            Double allPureSumFirstGen = clientChildList.stream()
+                    .map(child -> clientSalesByClientId.get(child.getId()))
+                    .map(cl -> cl.getPureSalesSum())
+                    .reduce((left, right) -> left + right).get();
+            Double finalPureSalesSum = clientPureSalesSum + allPureSumFirstGen;
+
+
+            GenerationEntity generation = new GenerationEntity();
+            generation.setClientSales(clientSalesEntity);
+            generation.setGenerationLevel(generationNumber);
+            generation.setMembersQty(clientChildList.size());
+            generation.setSalesSum(finalSalesSum);
+            generation.setPureSalesSum(finalPureSalesSum);
+
+            GenerationEntity savedGeneration = generationRepository.save(generation);
+
+            fillGenerationSquad(clientChildList, savedGeneration, clientSalesByClientId);
+        }
+
+    }
+
+    private void fillGenerationSquad(List<ClientEntity> clientChildList, GenerationEntity generation, Map<Long, ClientSalesEntity> clientSalesByClientId) {
+        clientChildList.stream().forEach(childClient -> {
+            GenerationSquadEntity generationSquadEntity = new GenerationSquadEntity();
+            generationSquadEntity.setGenerationEntity(generation);
+            generationSquadEntity.setClientEntity(childClient);
+            generationSquadEntity.setClientType(childClient.getType().getName());
+            generationSquadEntity.setRewardLevel(childClient.getLevel().getName());
+
+            ClientSalesEntity clientSalesEntity = clientSalesByClientId.get(childClient.getId());
+            generationSquadEntity.setPersonalSalesSum(clientSalesEntity.getPersonalSalesSum());
+            generationSquadEntity.setPureSalesSum(clientSalesEntity.getPureSalesSum());
+
+        });
     }
 
     private List<ClientSalesEntity> fillClientSales(List<ClientEntity> allClients, Map<Long, Double> sumByClientsId) {
@@ -76,14 +132,10 @@ public class CalculationService {
             ClientSalesEntity clientSalesEntity = new ClientSalesEntity();
             Double fullSum = Optional.ofNullable(sumByClientsId.get(client.getId())).orElse(0.0);
 
-
-
             clientSalesEntity.setCompanyName(company);
 
             List<ClientSalesEntity> clientSalesByClientAndCompanyName = clientSalesRepository.findByClientAndCompanyName(client, company);
-
             Integer version = clientSalesByClientAndCompanyName.stream().map(cs -> cs.getVersion()).max(Integer::compareTo).orElse(0);
-
             clientSalesEntity.setVersion(version + 1);
 
             clientSalesEntity.setClient(client);

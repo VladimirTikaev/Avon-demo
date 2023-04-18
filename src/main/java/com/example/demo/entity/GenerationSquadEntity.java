@@ -9,8 +9,9 @@ public class GenerationSquadEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "client_id")
-    private Long clientId;
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private ClientEntity clientEntity;
 
     @Column(name = "client_type")
     private String clientType;
@@ -36,12 +37,12 @@ public class GenerationSquadEntity {
         this.id = id;
     }
 
-    public Long getClientId() {
-        return clientId;
+    public ClientEntity getClientEntity() {
+        return clientEntity;
     }
 
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
+    public void setClientEntity(ClientEntity clientEntity) {
+        this.clientEntity = clientEntity;
     }
 
     public String getClientType() {
