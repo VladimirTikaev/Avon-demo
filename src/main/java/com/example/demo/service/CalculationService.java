@@ -101,7 +101,7 @@ public class CalculationService {
             generationSquadEntity.setGenerationEntity(generation);
             generationSquadEntity.setClientEntity(childClient);
             generationSquadEntity.setClientType(childClient.getType().getName());
-            generationSquadEntity.setRewardLevel(childClient.getLevel().getName());
+            generationSquadEntity.setRewardLevel(childClient.getLevel().getName().name());
 
             ClientSalesEntity clientSalesEntity = clientSalesByClientId.get(childClient.getId());
             generationSquadEntity.setPersonalSalesSum(clientSalesEntity.getPersonalSalesSum());
@@ -129,7 +129,7 @@ public class CalculationService {
             clientSalesEntity.setClient(client);
             clientSalesEntity.setClientFio(client.getFio());
             clientSalesEntity.setClientType(client.getType().getName());
-            clientSalesEntity.setRewardLevel(client.getLevel().getName());
+            clientSalesEntity.setRewardLevel(client.getLevel().getName().name());
             clientSalesEntity.setPersonalSalesSum(fullSum);
 
             Double pureSum = fullSum != 0.0

@@ -9,19 +9,19 @@ INSERT INTO avon.client_type (name)
 VALUES ('Представитель'),
        ('Бизнес-партнер');
 
-INSERT INTO avon.remuneration_level (name)
-VALUES ('К1'),
-       ('К2'),
-       ('К3'),
-       ('К4'),
-       ('Л1'),
-       ('Л2'),
-       ('Л3'),
-       ('Л4'),
-       ('Д1'),
-       ('Д2'),
-       ('Д3'),
-       ('Д4');
+INSERT INTO avon.remuneration_level (name, extra_bonus)
+VALUES ('K1', 0.0),
+       ('K2', 0.0),
+       ('K3', 1.0),
+       ('K4', 1.5),
+       ('L1', 2.0),
+       ('L2', 2.5),
+       ('L3', 3.0),
+       ('L4', 3.5),
+       ('D1', 4.0),
+       ('D2', 4.5),
+       ('D3', 5.0),
+       ('D4', 6.0);
 
 INSERT INTO avon.client (type_id, level_id, fio, discount)
 VALUES (2, 11, 'Борисова Стелла Дмитриевна', 2.0),

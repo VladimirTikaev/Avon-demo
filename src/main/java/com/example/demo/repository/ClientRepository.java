@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Map;
 
 public interface ClientRepository extends JpaRepository<ClientEntity, Long> {
 
